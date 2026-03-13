@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,user-scalable=no"/>
+  <meta name="theme-color" content="#2176b5"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Math Adventure"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <link rel="manifest" href="manifest.json"/>
+  <title>Math Adventure 🐰</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<canvas id="fx-canvas" aria-hidden="true"></canvas>
+<div id="screen-flash" aria-hidden="true"></div>
+<button id="sound-toggle" onclick="toggleSound()" aria-label="Toggle sound">🔊</button>
+
+<!-- ═══════════════════════════════════════════════
+     SPLASH SCREEN
+═══════════════════════════════════════════════ -->
+<div id="screen-splash" class="screen active" aria-label="Loading">
+  <div class="splash-bg"></div>
+  <div class="splash-content">
+    <div class="splash-logo" id="splash-logo">MATH<br>ADVENTURE</div>
+    <div class="splash-benny" id="splash-benny">🐰</div>
+    <div class="splash-subtitle">Help Benny hop home!</div>
+    <div class="splash-dots">
+      <span class="sdot"></span><span class="sdot"></span><span class="sdot"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TITLE SCREEN
+═══════════════════════════════════════════════ -->
+<div id="screen-title" class="screen" role="main">
+  <div class="ts-world" aria-hidden="true">
+    <div class="ts-sky"></div>
+    <div class="ts-sun">☀️</div>
+    <div class="ts-cloud tc1">☁️</div>
+    <div class="ts-cloud tc2">☁️</div>
+    <div class="ts-cloud tc3">⛅</div>
+    <!-- SVG hills on title -->
+    <div class="ts-svg-hills" id="ts-svg-hills">
+      <svg viewBox="0 0 900 120" preserveAspectRatio="none" style="width:100%;height:100%">
+        <path d="M0,80 Q150,20 300,60 Q450,100 600,40 Q750,0 900,50 L900,120 L0,120 Z" fill="#4caf76" opacity="0.7"/>
+        <path d="M0,100 Q200,50 400,80 Q600,110 900,60 L900,120 L0,120 Z" fill="#5DBB63" opacity="0.95"/>
+      </svg>
+    </div>
+    <div class="ts-trees"><span>🌲</span><span>🌳</span><span>🌲</span><span>🌳</span><span>🌲</span><span>🌳</span></div>
+    <div class="ts-ground"></div>
+    <div class="ts-flowers"><span>🌸</span><span>🌼</span><span>🌸</span><span>🌻</span><span>🌼</span><span>🌸</span></div>
+  </div>
+
+  <div class="title-card">
+    <div class="title-logo-wrap" aria-hidden="true">
+      <div class="title-logo-bg">MATH ADVENTURE</div>
+      <div class="title-logo">MATH ADVENTURE</div>
+    </div>
+    <h1 class="sr-only">Math Adventure — Help Benny hop home!</h1>
+
+    <div class="title-benny-scene" aria-hidden="true">
+      <div class="title-benny" id="title-benny">🐰</div>
+      <div class="title-benny-shadow"></div>
+      <div class="title-carrot">🥕</div>
+    </div>
+
+    <p class="title-tagline">Help Benny hop home!</p>
+
+    <div class="carrot-counter" aria-label="Your carrots">
+      <span class="carrot-icon">🥕</span>
+      <span id="title-carrot-count">0</span>
+      <span class="carrot-label">carrots</span>
+      <button class="trophy-btn" onclick="showTrophyRoom()" aria-label="Trophy room">🏆</button>
+    </div>
+
+    <p class="world-pick-label">Pick a World</p>
+
+    <div class="tt-toggle-row">
+      <span class="tt-label">Normal</span>
+      <div class="tt-switch" id="tt-switch" onclick="toggleTimeTrial()" role="switch"
+           aria-checked="false" aria-label="Time Trial mode" tabindex="0">
+        <div class="tt-knob"></div>
+      </div>
+      <span class="tt-label">⏱ Time Trial</span>
+      <span class="tt-fire">🔥</span>
+    </div>
+
+    <div class="world-row" role="list">
+      <button class="wbtn wbtn-1" onclick="startGame(1,G.timeTrial)" aria-label="World 1: Clover Meadow – Counting, Ages 4–6" role="listitem">
+        <div class="wbtn-sky" aria-hidden="true"></div>
+        <div class="wbtn-icon" aria-hidden="true">🌿🍄</div>
+        <div class="wbtn-num" aria-hidden="true">1</div>
+        <div class="wbtn-name">Meadow</div>
+        <div class="wbtn-sub">Counting</div>
+        <div class="wbtn-age">Ages 4–6</div>
+        <div class="wbtn-stars"></div>
+      </button>
+      <button class="wbtn wbtn-2" onclick="startGame(2,G.timeTrial)" aria-label="World 2: Sunflower Fields – Addition, Ages 5–7" role="listitem">
+        <div class="wbtn-sky" aria-hidden="true"></div>
+        <div class="wbtn-icon" aria-hidden="true">🌻☀️</div>
+        <div class="wbtn-num" aria-hidden="true">2</div>
+        <div class="wbtn-name">Sunfield</div>
+        <div class="wbtn-sub">Addition</div>
+        <div class="wbtn-age">Ages 5–7</div>
+        <div class="wbtn-stars"></div>
+      </button>
+      <button class="wbtn wbtn-3" onclick="startGame(3,G.timeTrial)" aria-label="World 3: Autumn Forest – Subtraction, Ages 6–8" role="listitem">
+        <div class="wbtn-sky" aria-hidden="true"></div>
+        <div class="wbtn-icon" aria-hidden="true">🍁🌲</div>
+        <div class="wbtn-num" aria-hidden="true">3</div>
+        <div class="wbtn-name">Autumn</div>
+        <div class="wbtn-sub">Subtraction</div>
+        <div class="wbtn-age">Ages 6–8</div>
+        <div class="wbtn-stars"></div>
+      </button>
+      <button class="wbtn wbtn-4" onclick="startGame(4,G.timeTrial)" aria-label="World 4: Crystal Peak – Mixed, Ages 7–9" role="listitem">
+        <div class="wbtn-sky" aria-hidden="true"></div>
+        <div class="wbtn-icon" aria-hidden="true">⛰️✨</div>
+        <div class="wbtn-num" aria-hidden="true">4</div>
+        <div class="wbtn-name">Crystal</div>
+        <div class="wbtn-sub">Mixed</div>
+        <div class="wbtn-age">Ages 7–9</div>
+        <div class="wbtn-stars"></div>
+      </button>
+      <button class="wbtn wbtn-5" onclick="startGame(5,G.timeTrial)" aria-label="World 5: Number Mountain – Times Tables, Ages 8–10" role="listitem">
+        <div class="wbtn-sky" aria-hidden="true"></div>
+        <div class="wbtn-icon" aria-hidden="true">🏔️⭐</div>
+        <div class="wbtn-num" aria-hidden="true">5</div>
+        <div class="wbtn-name">Number Mtn</div>
+        <div class="wbtn-sub">Times Tables</div>
+        <div class="wbtn-age">Ages 8–10</div>
+        <div class="wbtn-stars"></div>
+      </button>
+      <button class="wbtn wbtn-6" onclick="startGame(6,G.timeTrial)" aria-label="World 6: River Divide – Division, Ages 9–11" role="listitem">
+        <div class="wbtn-sky" aria-hidden="true"></div>
+        <div class="wbtn-icon" aria-hidden="true">🌊🪨</div>
+        <div class="wbtn-num" aria-hidden="true">6</div>
+        <div class="wbtn-name">River</div>
+        <div class="wbtn-sub">Division</div>
+        <div class="wbtn-age">Ages 9–11</div>
+        <div class="wbtn-stars"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TUTORIAL
+═══════════════════════════════════════════════ -->
+<div id="screen-tutorial" class="screen" role="dialog" aria-modal="true" aria-labelledby="tut-title">
+  <div class="tut-bg" aria-hidden="true"></div>
+  <div class="tut-panel">
+    <div class="tut-benny" aria-hidden="true" id="tut-benny">🐰</div>
+    <div class="tut-title" id="tut-title">Let's Learn!</div>
+    <div class="tut-body" id="tut-body"></div>
+    <div class="tut-visual" id="tut-visual" aria-hidden="true"></div>
+    <button class="gb gb-gold tut-go" onclick="dismissTutorial()">Let's Go! 🐰</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     GAME SCREEN
+═══════════════════════════════════════════════ -->
+<div id="screen-game" class="screen" role="main" aria-label="Math Adventure game">
+
+  <!-- World background -->
+  <div class="world" id="world" aria-hidden="true">
+    <div class="w-sky" id="w-sky"></div>
+    <div class="w-sun" id="w-sun">☀️</div>
+    <div class="w-clouds-far">
+      <span class="wc-far wc-far1">☁️</span>
+      <span class="wc-far wc-far2">☁️</span>
+    </div>
+    <div class="w-clouds">
+      <span class="wc wc1">☁️</span>
+      <span class="wc wc2">☁️</span>
+      <span class="wc wc3">⛅</span>
+    </div>
+    <!-- SVG Hills layer (populated by JS) -->
+    <div class="w-svg-hills" id="w-svg-hills"></div>
+    <div class="w-far-hills" id="w-farhills"></div>
+    <div class="w-mid-trees" id="w-midtrees"></div>
+    <div class="w-river" id="w-river">
+      <div class="river-ripple r1"></div>
+      <div class="river-ripple r2"></div>
+      <div class="river-ripple r3"></div>
+      <div class="river-stones" id="river-stones"></div>
+    </div>
+    <div class="w-mountain-peaks" id="w-peaks"></div>
+    <div class="w-near-grass" id="w-neargrass"></div>
+    <div class="w-ground" id="w-ground">
+      <div class="w-path">
+        <div class="path-dash pd1"></div>
+        <div class="path-dash pd2"></div>
+        <div class="path-dash pd3"></div>
+        <div class="path-dash pd4"></div>
+        <div class="path-dash pd5"></div>
+      </div>
+    </div>
+    <div class="w-home" id="w-home">
+      <div class="home-icon">🏠</div>
+      <div class="home-label">HOME</div>
+    </div>
+    <div class="ground-deco" id="ground-deco"></div>
+  </div>
+
+  <!-- Timer bar (Time Trial) -->
+  <div id="timer-wrap" aria-hidden="true">
+    <div id="timer-bar-fill"></div>
+  </div>
+
+  <!-- Benny character (SVG injected by JS) -->
+  <div class="benny-wrap" id="benny-wrap" aria-hidden="true">
+    <div id="streak-badge" class="streak-badge" aria-hidden="true"></div>
+    <div class="benny-char" id="benny-char">🐰</div>
+    <div class="benny-shadow-el"></div>
+    <div class="benny-bubble" id="benny-bubble"></div>
+  </div>
+
+  <!-- ── QUESTION CHIP ──────────────────────────── -->
+  <div class="q-chip" id="q-chip" role="status" aria-live="polite">
+    <div class="q-chip-hint" id="q-hint">What is...</div>
+    <div class="q-chip-eq" id="q-eq">3 + 4 = ?</div>
+    <!-- Special visual area (dice, number line, array) -->
+    <div id="q-special-area" class="q-special-area"></div>
+  </div>
+
+  <!-- Speed round badge (Q5) -->
+  <div id="speed-round-badge" class="speed-round-badge" aria-hidden="true">⚡ Speed Round! ×2</div>
+
+  <!-- ── ANSWER BUTTONS ─────────────────────────── -->
+  <div class="sign-row" id="sign-row" role="group" aria-label="Choose your answer">
+    <button class="sign sign-a" id="sign-a" onclick="checkAnswer(0)" aria-label="Answer A">
+      <div class="sign-letter" aria-hidden="true">A</div>
+      <div class="sign-num" id="sign-val-a">?</div>
+    </button>
+    <button class="sign sign-b" id="sign-b" onclick="checkAnswer(1)" aria-label="Answer B">
+      <div class="sign-letter" aria-hidden="true">B</div>
+      <div class="sign-num" id="sign-val-b">?</div>
+    </button>
+    <button class="sign sign-c" id="sign-c" onclick="checkAnswer(2)" aria-label="Answer C">
+      <div class="sign-letter" aria-hidden="true">C</div>
+      <div class="sign-num" id="sign-val-c">?</div>
+    </button>
+  </div>
+
+  <!-- HUD top bar -->
+  <div class="hud-bar">
+    <button class="hud-home" onclick="goHome()" aria-label="Return to menu">⌂</button>
+    <div class="hud-pips" id="hud-pips-bar"
+         role="progressbar" aria-label="Progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="5">
+      <div class="pip" id="pip1"></div>
+      <div class="pip" id="pip2"></div>
+      <div class="pip" id="pip3"></div>
+      <div class="pip" id="pip4"></div>
+      <div class="pip" id="pip5"></div>
+    </div>
+    <div class="hud-coin" aria-live="polite" aria-label="Score">
+      <span aria-hidden="true">⭐</span><span id="hud-score">0</span>
+    </div>
+  </div>
+
+  <!-- Lives (worlds 3+) -->
+  <div class="hud-lives" aria-live="polite" aria-label="Lives remaining">
+    <span id="h1">❤️</span>
+    <span id="h2">❤️</span>
+    <span id="h3">❤️</span>
+  </div>
+
+  <!-- Carrot count in-game -->
+  <div class="hud-carrots" aria-live="polite" aria-label="Carrots">
+    🥕 <span id="carrot-count">0</span>
+  </div>
+
+  <div class="hud-ribbon" id="hud-ribbon">Clover Meadow</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     LEVEL COMPLETE
+═══════════════════════════════════════════════ -->
+<div id="screen-lc" class="screen" role="dialog" aria-modal="true" aria-label="Level complete">
+  <div class="lc-world-bg" aria-hidden="true"></div>
+  <div class="lc-panel">
+    <div class="lc-confetti" id="lc-confetti" aria-hidden="true"></div>
+    <div class="lc-header" aria-hidden="true">
+      <span class="lc-crown">👑</span>
+      <span class="lc-title">LEVEL CLEAR!</span>
+    </div>
+    <div class="lc-benny-row" aria-hidden="true">
+      <div class="lc-benny">🐰</div>
+      <div class="lc-world-name" id="lc-name">Clover Meadow</div>
+    </div>
+    <div class="lc-badge" id="lc-badge">
+      <div class="badge-icon" id="badge-icon" aria-hidden="true">🌿</div>
+      <div class="badge-label">Badge Earned!</div>
+      <div class="badge-name" id="badge-name">Meadow Explorer</div>
+    </div>
+    <div class="lc-star-row" aria-hidden="true">
+      <span class="lc-s ls1">⭐</span>
+      <span class="lc-s ls2">🌟</span>
+      <span class="lc-s ls3">⭐</span>
+    </div>
+    <div class="lc-stats">
+      <div class="lc-stat-box">
+        <div class="lc-stat-n" id="lc-score">5</div>
+        <div class="lc-stat-l">Points</div>
+      </div>
+    </div>
+    <div class="lc-btns">
+      <button class="gb gb-gold" id="lc-next" onclick="nextLevel()">NEXT ▶</button>
+      <button class="gb gb-green" onclick="replayLevel()">REPLAY ↺</button>
+      <button class="gb gb-blue" id="lc-review-btn" onclick="showReview()" style="display:none">📋 Review</button>
+      <button class="gb gb-grey" onclick="goHome()">MENU</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     REVIEW MODE
+═══════════════════════════════════════════════ -->
+<div id="screen-review" class="screen" role="dialog" aria-modal="true" aria-label="Review Mistakes">
+  <div class="review-bg" aria-hidden="true"></div>
+  <div class="review-panel">
+    <div class="review-header">
+      <span class="review-icon">📋</span>
+      <span class="review-title">What I Missed</span>
+    </div>
+    <div class="review-grid" id="review-grid"></div>
+    <button class="gb gb-grey review-close" onclick="closeReview()">← Back</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     YOU WIN
+═══════════════════════════════════════════════ -->
+<div id="screen-win" class="screen" role="dialog" aria-modal="true" aria-label="You Win!">
+  <div class="win-bg" aria-hidden="true"></div>
+  <div class="win-panel">
+    <div class="win-rays" aria-hidden="true"></div>
+    <div class="win-trophy" aria-hidden="true">🏆</div>
+    <div class="win-title">YOU WIN!</div>
+    <div class="win-benny" aria-hidden="true">🐰🎉</div>
+    <div class="win-sub">Benny made it home!</div>
+    <div class="win-badges" id="win-badges" aria-label="All badges earned"></div>
+    <div class="win-score-label">Total Points</div>
+    <div class="win-stars" id="win-stars" aria-hidden="true">⭐⭐⭐</div>
+    <div class="win-total" id="win-total">0</div>
+    <button class="gb gb-gold win-play-again" onclick="goHome()">PLAY AGAIN 🎮</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TROPHY ROOM
+═══════════════════════════════════════════════ -->
+<div id="screen-trophy" class="screen" role="dialog" aria-modal="true" aria-label="Trophy Room">
+  <div class="trophy-bg" aria-hidden="true"></div>
+  <div class="trophy-panel">
+    <div class="trophy-header">
+      <span class="trophy-title-icon">🏆</span>
+      <span class="trophy-title">Trophy Room</span>
+    </div>
+    <div class="trophy-grid" id="trophy-grid"></div>
+    <div class="trophy-carrots">
+      You have 🥕 <strong id="trophy-carrot-count">0</strong> carrots!
+    </div>
+    <button class="gb gb-grey trophy-close" onclick="closeTrophy()">← Back</button>
+  </div>
+</div>
+
+<div id="sr-announce" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+<script src="script.js"></script>
+</body>
+</html>
