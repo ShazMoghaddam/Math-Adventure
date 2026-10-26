@@ -147,5 +147,4 @@ Made with 🥕 by **Shaz Moghaddam**
 
 ## 📄 Licence
 
-This project is currently **All Rights Reserved**.
-Please contact the author before using, copying, or distributing any part of this project.
+Released under the [MIT licence](./LICENSE). Free to use, change and share, including commercially, as long as the licence and copyright notice stay with it.
